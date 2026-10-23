@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block content %}
+<div class="page-heading"><div><div class="eyebrow">АУДИТ БЕЗПЕКИ</div><h1>Журнал входів</h1><p>{{ 'Останні 200 подій усіх користувачів.' if admin else 'Останні 100 подій вашого облікового запису.' }} Час наведено в UTC.</p></div></div>
+<section class="panel"><div class="table-responsive"><table class="table"><thead><tr><th>Час (UTC)</th>{% if admin %}<th>Пошта</th>{% endif %}<th>IP-адреса</th><th>Подія</th><th>Результат</th></tr></thead><tbody>
+{% for attempt in attempts %}<tr><td>{{ attempt.created_at.strftime('%d.%m.%Y %H:%M:%S') }}</td>{% if admin %}<td>{{ attempt.email }}</td>{% endif %}<td>{{ attempt.ip }}</td><td>{{ attempt.event_label }}</td><td><span class="badge {{ 'text-bg-success' if attempt.success else 'text-bg-danger' }}">{{ 'Успішно' if attempt.success else 'Відхилено' }}</span></td></tr>
+{% else %}<tr><td colspan="5">Подій ще немає.</td></tr>{% endfor %}
+</tbody></table></div></section>{% endblock %}

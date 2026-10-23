@@ -1,0 +1,34 @@
+{% macro fields(form) %}
+{{ form.hidden_tag() }}
+{% for field in form if field.type not in ['CSRFTokenField','SubmitField','HiddenField'] %}
+<div class="field">{{ field.label(class='form-label') }}
+{% if field.name == 'work' and field.items is defined %}
+<div class="work-editor" data-work-editor>
+<div class="work-rows" data-work-rows>
+{% for item in field.items %}<div class="work-row" data-work-row>
+{{ field(class='form-control', id='work' if loop.first else 'work-' ~ loop.index, value=item, maxlength=120, required=loop.first, autocomplete='off', list='work-suggestions', **{'aria-label': 'Робота ' ~ loop.index, 'aria-describedby':'work-errors work-help'}) }}
+<button class="btn btn-outline-danger work-remove" type="button" data-remove-work aria-label="Прибрати цю роботу" {% if loop.first %}hidden{% endif %}>×</button>
+</div>{% endfor %}
+</div>
+<datalist id="work-suggestions"></datalist>
+<button class="btn btn-outline-primary btn-sm mt-2" type="button" data-add-work>＋ Додати ще роботу</button>
+<small id="work-help" class="work-help">До 20 робіт на одну дату. Виберіть підказки або впишіть власні назви; вартість нижче — загальна за запис.</small>
+</div>
+{% else %}
+{{ field(class='form-select' if field.type == 'SelectField' else 'form-control', autocomplete=('current-password' if request.endpoint == 'auth.login' else 'new-password') if field.type == 'PasswordField' else 'off', **{'aria-describedby':field.id+'-errors'}) }}
+{% if field.name == 'date' %}<small>Введіть дату вручну у форматі ДД.ММ.РРРР, наприклад 23.10.2026.</small>{% endif %}
+{% endif %}
+<div id="{{ field.id }}-errors" class="field-errors">{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}</div>
+{% if field.name == 'password' and request.endpoint in ['auth.register','auth.reset'] %}<meter class="strength" id="password-strength" min="0" max="5" value="0" aria-label="Складність пароля"></meter><small id="password-help">8+ символів, велика й мала літери, цифра та спецсимвол.</small>{% endif %}
+</div>{% endfor %}
+{% if form.csrf_token is defined %}{% for error in form.csrf_token.errors %}<p class="field-errors">{{ error }}</p>{% endfor %}{% endif %}
+{% endmacro %}
+{% macro records_table(records,deletable=false) %}
+{% if records %}<div class="table-responsive"><table class="table"><thead><tr><th>Дата</th><th>Роботи / автомобіль</th><th>Пробіг</th><th>Вартість</th>{% if deletable %}<th>Дія</th>{% endif %}</tr></thead><tbody>
+{% for record in records %}<tr><td>{{ record.date.strftime('%d.%m.%Y') }}</td><td>
+<ul class="work-list">{% for item in record.work_items %}<li>{{ item }}</li>{% endfor %}</ul>
+<a class="muted" href="{{ url_for('garage.detail',vehicle_id=record.vehicle_id) }}">{{ record.vehicle.make }} {{ record.vehicle.model }}</a>
+{% if record.notes %}<p class="notes">{{ record.notes }}</p>{% endif %}</td><td>{{ '{:,}'.format(record.mileage).replace(',',' ') }} км</td><td class="amount">{{ '%.2f'|format(record.cost) }} ₴</td>
+{% if deletable %}<td><div class="actions"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('garage.edit_record',record_id=record.id) }}">Редагувати</a><form method="post" action="{{ url_for('garage.delete_record',record_id=record.id) }}" data-confirm="Видалити цей запис?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" type="submit">Видалити</button></form></div></td>{% endif %}</tr>{% endfor %}
+</tbody></table></div>{% else %}<div class="empty"><span class="empty-icon">↺</span><h3>Історія починається з першого запису</h3><p>Додайте обслуговування на сторінці автомобіля — і всі деталі будуть під рукою.</p><a class="btn btn-outline-primary" href="{{ url_for('garage.index') }}">До мого гаража ↗</a></div>{% endif %}
+{% endmacro %}

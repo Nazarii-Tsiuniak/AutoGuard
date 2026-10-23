@@ -1,0 +1,8 @@
+{
+  "scope": "project source excluding runtime secrets, databases, virtualenv and caches",
+  "files_scanned": 54,
+  "obvious_secret_findings": [],
+  "git_repository_present": false,
+  "gitignore_has_env_and_instance": true,
+  "limitation": "Pattern scan is not proof of absence of all secrets; no Git history exists to scan."
+}

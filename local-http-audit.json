@@ -1,0 +1,33 @@
+{
+  "transport": "real loopback HTTP",
+  "database": "temporary SQLite",
+  "email": "temporary local files; no SMTP delivery",
+  "captcha": "real Cloudflare Siteverify, public dummy keys",
+  "checks": {
+    "home_http_200": true,
+    "csrf_missing_rejected": true,
+    "live_dummy_captcha_registration": true,
+    "unactivated_garage_restricted": true,
+    "activation_get_and_post": true,
+    "activation_replay_rejected": true,
+    "dashboard_authenticated": true,
+    "vehicle_created": true,
+    "multiple_works_created": true,
+    "maintenance_edited": true,
+    "statistics_single_total": true,
+    "user_admin_forbidden": true,
+    "reset_requested": true,
+    "password_reset": true,
+    "reset_replay_rejected": true,
+    "old_password_rejected": true,
+    "new_password_accepted": true,
+    "record_deleted": true,
+    "vehicle_deleted": true,
+    "logout": true,
+    "copied_cookie_revoked": true,
+    "lockout_rejects_correct_password": true,
+    "admin_users_and_journal": true
+  },
+  "env_unchanged": true,
+  "all_checks_passed": true
+}
